@@ -612,45 +612,10 @@ defmodule Norm do
     coll_of({kpred, vpred}, opts)
   end
 
-  # @doc ~S"""
-  # Concatenates a sequence of predicates or patterns together. These predicates
-  # must be tagged with an atom. The conformed data is returned as a
-  # keyword list.
-
-  # iex> conform!([31, "Chris"], cat(age: integer?(), name: string?()))
-  # [age: 31, name: "Chris"]
-  # iex> conform([true, "Chris"], cat(age: integer?(), name: string?()))
-  # {:error, ["in: [0] at: :age val: true spec: integer?()"]}
-  # iex> conform([31, :chris], cat(age: integer?(), name: string?()))
-  # {:error, ["in: [1] at: :name val: :chris spec: string?()"]}
-  # iex> conform([31], cat(age: integer?(), name: string?()))
-  # {:error, ["in: [1] at: :name val: nil spec: Insufficient input"]}
-  # """
-  # def cat(opts) do
-  #   fn path, input ->
-  #     results =
-  #       opts
-  #       |> Enum.with_index
-  #       |> Enum.map(fn {{tag, spec}, i} ->
-  #         val = Enum.at(input, i)
-  #         if val do
-  #           {tag, spec.(path ++ [{:index, i}], val)}
-  #         else
-  #           {tag, {:error, [error(path ++ [{:index, i}], nil, "Insufficient input")]}}
-  #         end
-  #       end)
-
-  #     errors =
-  #       results
-  #       |> Enum.filter(fn {_, {result, _}} -> result == :error end)
-  #       |> Enum.map(fn {tag, {_, errors}} -> {tag, errors} end)
-  #       |> Enum.flat_map(fn {tag, errors} -> Enum.map(errors, &(%{&1 | at: tag})) end)
-
-  #     if Enum.any?(errors) do
-  #       {:error, errors}
-  #     else
-  #       {:ok, Enum.map(results, fn {tag, {_, data}} -> {tag, data} end)}
-  #     end
-  #   end
-  # end
+  @doc """
+  Creates a spec that matches any term.
+  """
+  def any do
+    %Norm.Core.Any{}
+  end
 end
