@@ -54,9 +54,13 @@ defmodule Norm.SpecError do
   defp format({key, spec_or_schema}, i) do
     "{" <> format(key, i) <> ", " <> format(spec_or_schema, i + 1) <> "}"
   end
+
   defp format(atom, _) when is_atom(atom), do: ":#{atom}"
   defp format(str, _) when is_binary(str), do: ~s|"#{str}"|
   defp format(%Spec{predicate: pred}, _), do: "spec(#{pred})"
+  defp format(%Spec.And{left: l, right: r}, _), do: "(#{format(l, 0)} and #{format(r, 0)})"
+  defp format(%Spec.Or{left: l, right: r}, _), do: "(#{format(l, 0)} or #{format(r, 0)})"
+
   defp format(%Schema{specs: specs}, i) do
     f = fn {key, spec_or_schema}, i ->
       format(key, i) <> " => " <> format(spec_or_schema, i + 1)
@@ -64,15 +68,17 @@ defmodule Norm.SpecError do
 
     specs =
       specs
-      |> Enum.map(& f.(&1, i))
+      |> Enum.map(&f.(&1, i))
       |> Enum.map(&pad(&1, (i + 1) * 2))
       |> Enum.join("\n")
 
     "%{\n" <> specs <> "\n" <> pad("}", i * 2)
   end
+
   defp format(%Collection{spec: spec}, i) do
     "coll_of(#{format(spec, i)})"
   end
+
   defp format(%Alt{specs: specs}, i) do
     formatted =
       specs
@@ -86,6 +92,7 @@ defmodule Norm.SpecError do
       "alt([])"
     end
   end
+
   defp format(%Union{specs: specs}, i) do
     formatted =
       specs
