@@ -1,13 +1,11 @@
 defmodule Norm.MixProject do
   use Mix.Project
 
-  @version "0.10.3"
-
   def project do
     [
       app: :norm,
-      version: @version,
-      elixir: "~> 1.7",
+      version: "0.10.4",
+      elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
@@ -51,7 +49,7 @@ defmodule Norm.MixProject do
 
   def docs do
     [
-      source_ref: "v#{@version}",
+      source_ref: "v0.10.4",
       source_url: "https://github.com/keathley/norm",
       main: "Norm"
     ]
